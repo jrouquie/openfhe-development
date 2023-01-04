@@ -1,19 +1,19 @@
 How To Migrate A User Project From Palisade To OpenFHE
 ======================================================
 
-This migration guide describes how to migrate user projects from Palisade to OpenFHE The guide uses `src/pke/examples/simple-integers.cpp <https://github.com/openfheorg/openfhe-development/blob/main/src/pke/examples/simple-integers.cpp>`_ as an example.
+This migration guide describes how to migrate user projects from Palisade to OpenFHE. The guide uses `src/pke/examples/simple-integers.cpp <https://github.com/openfheorg/openfhe-development/blob/main/src/pke/examples/simple-integers.cpp>`_ as an example.
 
 Before making any changes to `simple-integers.cpp`:
 
-- install OpenFHE (see instructions `here <https://openfhe-development.readthedocs.io/en/latest/sphinx_rsts/intro/installation/installation.html>`_)
+- Install OpenFHE (see instructions `here <https://openfhe-development.readthedocs.io/en/latest/sphinx_rsts/intro/installation/installation.html>`_)
 
-- change the ``CMakeLists.User.txt``: replace all instances of **Palisade** with **OpenFHE** and all instances of **PALISADE** with **OPENFHE**
+- Change the ``CMakeLists.User.txt``: replace all instances of **Palisade** with **OpenFHE** and all instances of **PALISADE** with **OPENFHE**
 
 Code changes (in `src/pke/examples/simple-integers.cpp`):
 
 1. Generate CryptoContext (see instructions `here <https://github.com/openfheorg/openfhe-development/tree/main/src/pke/examples#generating-cryptocontext-using-gencryptocontext>`_).
 You don’t need to set multiple arguments anymore to generate CryptoContext. A separate parameter object is required instead and every parameter in the object has a default value. All default values can be seen by simply printing the object. Set only those parameters that you want to change.
-For this example we changed 2 of them:
+For this example, we changed two of them:
 
 ::
 
@@ -25,13 +25,15 @@ The parameter object is created using a template and for BFV it should be
 
 ::
 
-    CCParams<CryptoContextBGVRNS> parameters;
+    CCParams<CryptoContextBFVRNS> parameters;
 
 2. All other changes are mostly cosmetic as some types and functions were renamed:
 
 - ``KeyPair<DCRTPoly>`` instead of ``LPKeyPair<DCRTPoly>``
 - ``EvalRotateKeyGen()`` instead of ``EvalAtIndexKeyGen()``
 - ``EvalRotate()`` instead of ``EvalAtIndex()``
+- ``GetScheme()`` instead of ``GetEncryptionAlgorithm()``
+- ``GetNoiseScaleDeg()`` instead of ``GetDepth()``
 
 After you make all the changes mentioned above, you can link and run the example.
 
@@ -81,9 +83,9 @@ Palisade-OpenFHE type mappings and new parameter types
      - FIXEDAUTO
    * - EXACTRESCALE
      - FLEXIBLEAUTO
-   * - 
+   * -
      - FLEXIBLEAUTOEXT (new)
-   * - 
+   * -
      - NORESCALE (new)
    * - **BFV CryptoContext Call**
      - **MultiplicationTechnique (BFV only)**
@@ -91,13 +93,13 @@ Palisade-OpenFHE type mappings and new parameter types
      - BEHZ
    * - genCryptoContextBFVrns
      - HPS
-   * - 
+   * -
      - HPSPOVERQ (new)
-   * - 
+   * -
      - HPSPOVERQLEVELED (new)
 
 
-If your project includes serialization, then the following files are to be included in addition to “openfhe.h”:
+If your project includes serialization, then the following files should be included in addition to “openfhe.h”:
 
 1. To serialize ciphertext:
 
